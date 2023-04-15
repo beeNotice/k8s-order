@@ -167,7 +167,7 @@ Nous n'avons rien de particulier à réaliser, nous nous appuyons ce que nous av
 
 ## Gestion de dépendances dans un contexte GitOps
 
-Imaginons maintenant que l'on veille gérer l'ordre de déploiement dans une approche GitOps.
+Imaginons maintenant que l'on veuille gérer l'ordre de déploiement dans une approche GitOps.
 Il est possible d'adresser cela en nous appuyant sur les [dependencies ](https://fluxcd.io/flux/components/kustomize/kustomization/#dependencies) de Flux. 
 
 Pour l'illustrer, nous allons prendre un exemple qui n'a pas beaucoup de sens fonctionnel, mais là n'est pas le propos ! 
@@ -187,6 +187,7 @@ k8s-order       main@sha1:359d1d72      False           True    Applied revision
 k8s-order-after                         False           False   dependency 'flux-system/k8s-order' is not ready
 (...)
 ```
+Attendons quelques secondes.
 Une fois le déploiement de nginx dans le namespace `demo` réalisé, notre nouveau déploiement est réalisé !
 
 ```bash
@@ -205,7 +206,6 @@ Je dirais que de façon générale, si on peut éviter d'avoir à le gérer manu
 ## Contribution
 
 Les contributions sont toujours les bienvenues !
-N'hésitez pas à ouvrir des issues ou à envoyer des PR.
 
 N'hésitez pas à me [contacter](https://www.linkedin.com/in/martinfabien/) pour que l'on en discute ;)
 
