@@ -1,0 +1,33 @@
+apiVersion: kustomize.toolkit.fluxcd.io/v1
+kind: Kustomization
+metadata:
+  name: k8s-order
+  namespace: flux-system
+spec:
+  interval: 10s
+  path: ./deploy/03_kustomize
+  prune: true
+  sourceRef:
+    kind: GitRepository
+    name: k8s-order
+  healthChecks:
+    - apiVersion: apps/v1
+      kind: Deployment
+      name: nginx
+      namespace: demo
+---
+apiVersion: kustomize.toolkit.fluxcd.io/v1
+kind: Kustomization
+metadata:
+  name: k8s-order-after
+  namespace: flux-system
+spec:
+  dependsOn:
+    - name: k8s-order
+  interval: 10s
+  path: ./deploy/03_kustomize
+  prune: true
+  sourceRef:
+    kind: GitRepository
+    name: k8s-order
+  targetNamespace: after
