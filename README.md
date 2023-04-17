@@ -20,13 +20,37 @@ L'ordre d'application des fichiers se fait de manière lexicographique.
 Si l'on cherche à appliquer les éléments de ce dossier, le déploiement échoue car le namespace cible du déploiement n'est pas créé.
 
 ```bash
-$ kubectl apply -f ./deploy/01_no-order
+$ kubectl apply -f ./deploy/00_no-order
 namespace/demo created
 secret/registry-credential created
 serviceaccount/demo created
 service/nginx created
-Error from server (NotFound): error when creating "deploy/01_no-order/deployment.yaml": namespaces "demo" not found
+Error from server (NotFound): error when creating "deploy/00_no-order/deployment.yaml": namespaces "demo" not found
 ``` 
+
+## Nommage dans l'ordre lexicographique
+
+Une première solution consiste à nommer nos fichiers de manière à ce qu'ils soient appliqués dans le bon ordre, en les préfixant par un chiffre par exemple.
+
+```bash
+$ kubectl apply -f ./deploy/01_naming-order
+namespace/demo created
+secret/registry-credential created
+serviceaccount/demo created
+deployment.apps/nginx created
+service/nginx created
+``` 
+Nous pouvons vérifier que cette fois-ci, notre nginx est bien déployé :
+
+```bash
+$ SERVICE_IP=$(kubectl get -o template service/nginx -n demo --template '{{ range (index .status.loadBalancer.ingress 0) }}{{ . }}{{ end }}')
+$ curl $SERVICE_IP:8080
+(...)
+<title>Welcome to nginx!</title>
+(...)
+``` 
+
+Ça fonctionne, et pour un PoC ou un Hello World ce sera très bien. Mais ça vite être pénible, par exemple lorsque vous devrez ajouter un fichier qui modifie l'ordre, vous serez alors bon pour renommer tous vos fichiers !
 
 ## Déploiement séquentiel
 
@@ -45,14 +69,6 @@ $ kubectl apply -f ./deploy/01_no-order/service.yaml
 service/nginx created
 ``` 
 
-Nous pouvons vérifier que cette fois-ci, notre nginx est bien déployé :
-```bash
-$ SERVICE_IP=$(kubectl get -o template service/nginx -n demo --template '{{ range (index .status.loadBalancer.ingress 0) }}{{ . }}{{ end }}')
-$ curl $SERVICE_IP:8080
-(...)
-<title>Welcome to nginx!</title>
-(...)
-``` 
 Si l'on avait besoin d'attendre le déploiement effectif d'un composant, on pourrait également s'appuyer sur `wait` de kubectl entre les différentes étapes :
 
 ```bash 
